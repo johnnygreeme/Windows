@@ -1,5 +1,5 @@
 # [~] ============================================================================== [~]
-# [~] Find-CredentialsInYaml.ps1
+# [~] FindCredentialsInYaml.ps1
 # [~] ============================================================================== [~]
 # Description:
 #   Searches all .yaml and .yml files under C:\Users (recursively)
