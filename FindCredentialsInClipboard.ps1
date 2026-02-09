@@ -6,16 +6,14 @@
 #   usernames or passwords based on commonly used configuration keys
 #   (e.g., DB_USER, POSTGRES_PASSWORD, etc.).
 #
-#   Uses the same regex logic as the file-based scanner.
-#   Outputs any detected username or password.
+#   Displays raw clipboard content first, then extracted credentials.
 #
 # Requirements:
-#   - PowerShell 5.1+ (Windows) with access to Windows Forms or WPF clipboard APIs.
-#   - Works only on Windows (clipboard support is OS-specific).
+#   - PowerShell 5.1+ on Windows (uses System.Windows.Forms.Clipboard).
 #
 # Note:
 #   This script is intended for security audits or personal use.
-#   It does NOT parse structured data (e.g., YAML/JSON) — only applies regex.
+#   It does NOT parse structured data — only applies regex.
 #   False positives (e.g., from comments or examples) are possible.
 # [~] ============================================================================== [~]
 
@@ -37,7 +35,32 @@ if ([string]::IsNullOrWhiteSpace($ClipboardContent)) {
     exit 0
 }
 
-Write-Host "[*] Analyzing clipboard content for credentials..." -ForegroundColor Cyan
+# [~] ============================================================================== [~]
+# [~] Display raw clipboard content
+# [~] ============================================================================== [~]
+Write-Host "`n[+] Raw clipboard content:" -ForegroundColor Cyan
+Write-Host ("-" * 40) -ForegroundColor DarkGray
+
+# Optional: limit output length to avoid flooding (uncomment if needed)
+# $PreviewLength = 2000
+# if ($ClipboardContent.Length -gt $PreviewLength) {
+#     $DisplayContent = $ClipboardContent.Substring(0, $PreviewLength) + "`n... [truncated]"
+# } else {
+#     $DisplayContent = $ClipboardContent
+# }
+
+# Use full content by default
+$DisplayContent = $ClipboardContent
+
+# Normalize line endings for clean console output
+$DisplayContent = $DisplayContent -replace "`r`n", "`n" -replace "`r", "`n"
+Write-Host $DisplayContent
+Write-Host ("-" * 40) -ForegroundColor DarkGray
+
+# [~] ============================================================================== [~]
+# [~] Analyze for credentials
+# [~] ============================================================================== [~]
+Write-Host "`n[*] Analyzing clipboard content for credentials..." -ForegroundColor Cyan
 
 # Regex pattern (same as in file scanner)
 $CredentialPattern = '(?im)(username|login_user|PGADMIN_DEFAULT_EMAIL|POSTGRES_USER|MYSQL_USER|DB_USER|DB_USERNAME):\s*(\S+)|(password|login_password|PGADMIN_DEFAULT_PASSWORD|POSTGRES_PASSWORD|MYSQL_PASSWORD|DB_PASS|DB_PASSWORD):\s*(\S+)'
@@ -66,7 +89,7 @@ foreach ($Match in $CredentialMatches) {
 
 # Output result if anything was found
 if ($Username -or $Password) {
-    Write-Host ("[!] Credentials detected:`n    User: `"{0}`"`n    Pass: `"{1}`"" -f $Username, $Password) -ForegroundColor Magenta
+    Write-Host ("`n[!] Credentials detected:`n    User: `"{0}`"`n    Pass: `"{1}`"" -f $Username, $Password) -ForegroundColor Magenta
 } else {
-    Write-Host "[+] Patterns matched, but no usable values extracted." -ForegroundColor Green
+    Write-Host "`n[+] Patterns matched, but no usable values extracted." -ForegroundColor Green
 }
