@@ -63,7 +63,7 @@ Write-Host ("-" * 40) -ForegroundColor DarkGray
 Write-Host "`n[*] Analyzing clipboard content for credentials..." -ForegroundColor Cyan
 
 # Regex pattern (same as in file scanner)
-$CredentialPattern = '(?im)(username|login_user|PGADMIN_DEFAULT_EMAIL|POSTGRES_USER|MYSQL_USER|(DB_USER|DB_USERNAME))\s*(\S+)|(password|login_password|PGADMIN_DEFAULT_PASSWORD|POSTGRES_PASSWORD|MYSQL_PASSWORD|(DB_PASS|DB_PASSWORD))\s*(\S+)'
+$CredentialPattern = '(?im)(username|login_user|PGADMIN_DEFAULT_EMAIL|POSTGRES_USER|MYSQL_USER|DB_USER|DB_USERNAME)\=\s*(\S+)|(password|login_password|PGADMIN_DEFAULT_PASSWORD|POSTGRES_PASSWORD|MYSQL_PASSWORD|DB_PASS|DB_PASSWORD)\=\s*(\S+)'
 
 # Perform regex match on clipboard text
 $CredentialMatches = [regex]::Matches($ClipboardContent, $CredentialPattern)
