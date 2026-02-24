@@ -1,2 +1,2 @@
-# PowerShell
-Scripts for PowerShell
+# Windows
+Scripts for Windows
